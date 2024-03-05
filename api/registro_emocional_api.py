@@ -41,7 +41,7 @@ def obtener_registro_emocional(registro_id: int, db: Session = Depends(get_db)):
 @router.get("/registros-emocionales/", response_model=List[registroEmocionalRespuesta])
 def obtener_registros_emocionales(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     registros_emocionales = db.query(RegistroEmocional).offset(skip).limit(limit).all()
-    return registroEmocionalRespuesta.from_orm(db_registro_emocional)
+    return registroEmocionalRespuesta.from_orm(registros_emocionales)
 
 @router.put("/registros-emocionales/{registro_id}", response_model=registroEmocionalRespuesta)
 def actualizar_registro_emocional(registro_id: int, registro_emocional: RegistroEmocionalCreate, db: Session = Depends(get_db)):
