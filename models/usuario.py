@@ -8,3 +8,9 @@ class Usuario(Base):
     nombre = Column(String)
     email = Column(String, unique=True, index=True)
     contraseña = Column(String)
+
+
+class UsuarioCreate(Base):
+    nombre: str
+    email: str
+    contraseña: str

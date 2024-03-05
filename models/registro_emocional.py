@@ -14,3 +14,10 @@ class RegistroEmocional(Base):
     comentario = Column(String)
 
     usuario = relationship("Usuario", back_populates="registros_emocionales")
+
+
+class registroEmocionalCreate(Base):
+    fecha: Date
+    emocion: str
+    color: str
+    comentario: str
