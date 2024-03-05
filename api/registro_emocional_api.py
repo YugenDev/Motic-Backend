@@ -38,4 +38,24 @@ def obtener_registros_emocionales(skip: int = 0, limit: int = 10, db: Session = 
 
 
 @router.put("/registros-emocionales/{registro_id}", response_model=RegistroEmocional)
-def 
+def actualizar_registro_emocional(registro_id: int, registro_emocional: RegistroEmocionalCreate, db: Session = Depends(get_db)):
+    db_registro_emocional = db.query(RegistroEmocional).filter(RegistroEmocional.id == registro_id).first()
+    if db_registro_emocional is None:
+        raise HTTPException(status_code=404, detail="Registro emocional no encontrado")
+    
+    for key, value in db_registro_emocional.dict().items():
+        setattr(db_registro_emocional, key, value)
+
+    db.commit()
+    db.refresh(db_registro_emocional)
+    return db_registro_emocional
+
+@router.delete("/registros-emocionales/{registro_id}", response_model=RegistroEmocional)
+def eliminar_registro_emocional(registro_id: int, db: Session = Depends(get_db)):
+    db_registro_emocional = db.query(RegistroEmocional).filter(RegistroEmocional.id == registro_id).first()
+    if db_registro_emocional is None:
+        raise HTTPException(status_code=404, detail="No se ha encontrado el registro emocional")
+    
+    db.delete(db_registro_emocional)
+    db.commit()
+    return db_registro_emocional
