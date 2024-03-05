@@ -3,9 +3,16 @@ from sqlalchemy.orm import Session
 from config.database import SessionLocal
 from models.usuario import Usuario, UsuarioCreate
 from typing import List
-
+from pydantic import BaseModel
 
 router = APIRouter()
+
+
+class UsuarioResponse(BaseModel):
+    id: int
+    nombre: str
+    email: str
+
 
 
 def get_db():
@@ -16,23 +23,23 @@ def get_db():
         db.close()
 
 
-@router.post("/usuarios/", response_model=Usuario)
+@router.post("/usuarios/", response_model=UsuarioResponse)
 def crear_usuario(usuario: UsuarioCreate, db: Session = Depends(get_db)):
     db_usuario = Usuario(**usuario.dict())
     db.add(db_usuario)
     db.commit()
     db.refresh(db_usuario)
-    return db_usuario
+    return UsuarioResponse.from_orm(db_usuario)
 
 
-@router.get("/usuarios/{usuario_id}", response_model=Usuario)
+@router.get("/usuarios/{usuario_id}", response_model=UsuarioResponse)
 def obtener_usuario(usuario_id: int, db: Session = Depends(get_db)):
     db_usuario = db.query(Usuario).filter(Usuario.id == usuario_id).first()
     if db_usuario is None:
         raise HTTPException(status_code=404, detail="Usuario no encontrado") 
-    return db_usuario
+    return UsuarioResponse.from_orm(db_usuario)
 
-@router.put("/usuarios/{usuario_id}", response_model=Usuario)
+@router.put("/usuarios/{usuario_id}", response_model=UsuarioResponse)
 def actualizar_usuario(usuario_id: int, usuario: UsuarioCreate, db: Session = Depends(get_db)):
     db_usuario = db.query(Usuario).filter(Usuario.id == usuario_id).first()
     if db_usuario is None:
@@ -43,9 +50,9 @@ def actualizar_usuario(usuario_id: int, usuario: UsuarioCreate, db: Session = De
 
     db.commit()
     db.refresh(db_usuario)
-    return db_usuario
+    return UsuarioResponse.from_orm(db_usuario)
 
-@router.delete("/usuarios/{usuario_id}", response_model=Usuario)
+@router.delete("/usuarios/{usuario_id}", response_model=UsuarioResponse)
 def eliminar_usuario(usuario_id: int, db: Session = Depends(get_db)):
     db_usuario = db.query(Usuario).filter(Usuario.id == usuario_id).first()
     if db_usuario is None:
@@ -53,4 +60,4 @@ def eliminar_usuario(usuario_id: int, db: Session = Depends(get_db)):
 
     db.delete(db_usuario)
     db.commit()
-    return db_usuario    
+    return UsuarioResponse.from_orm(db_usuario)  

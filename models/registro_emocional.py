@@ -1,6 +1,7 @@
 from config.database import Base
 from sqlalchemy import Column, ForeignKey, Integer, String, Date
 from sqlalchemy.orm import relationship
+from pydantic import BaseModel
 
 
 class RegistroEmocional(Base):
@@ -8,7 +9,7 @@ class RegistroEmocional(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("usuarios.id"))
-    fecha = Column(Date)
+    fecha = Column(String)
     emocion = Column(String)
     color = Column(String)
     comentario = Column(String)
@@ -16,8 +17,8 @@ class RegistroEmocional(Base):
     usuario = relationship("Usuario", back_populates="registros_emocionales")
 
 
-class registroEmocionalCreate(Base):
-    fecha: Date
+class RegistroEmocionalCreate(BaseModel):
+    fecha: str
     emocion: str
     color: str
     comentario: str

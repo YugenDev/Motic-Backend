@@ -1,5 +1,7 @@
 from config.database import Base
 from sqlalchemy import Column, Integer, String
+from pydantic import BaseModel
+
 
 class Usuario(Base):
     __tablename__ = "people"
@@ -10,7 +12,7 @@ class Usuario(Base):
     contraseña = Column(String)
 
 
-class UsuarioCreate(Base):
+class UsuarioCreate(BaseModel):
     nombre: str
     email: str
     contraseña: str
