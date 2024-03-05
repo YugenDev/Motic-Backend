@@ -38,3 +38,4 @@ def obtener_registros_emocionales(skip: int = 0, limit: int = 10, db: Session = 
 
 
 @router.put("/registros-emocionales/{registro_id}", response_model=RegistroEmocional)
+def 
