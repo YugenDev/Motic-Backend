@@ -19,3 +19,7 @@ class UsuarioCreate(BaseModel):
     nombre: str
     email: str
     contraseña: str
+
+    class Config:
+        orm_mode = True
+        from_orm = True

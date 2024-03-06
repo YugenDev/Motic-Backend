@@ -22,3 +22,7 @@ class RegistroEmocionalCreate(BaseModel):
     emocion: str
     color: str
     comentario: str
+
+    class Config:
+        orm_mode = True
+        from_orm = True
