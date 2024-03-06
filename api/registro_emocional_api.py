@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from config.database import SessionLocal
 from models.registro_emocional import RegistroEmocional, RegistroEmocionalCreate
+from models.usuario import Usuario
 from typing import List
 from pydantic import BaseModel
 
@@ -23,13 +24,28 @@ def get_db():
         db.close()
 
 
-@router.post("/registros-emocionales", response_model=registroEmocionalRespuesta)
-def crear_registro_emocional(registro_emocional: RegistroEmocionalCreate, db: Session = Depends(get_db)):
-    db_registro_emocional = RegistroEmocional(**registro_emocional.dict())
+@router.post("/registros-emocionales/{usuario_id}", response_model=RegistroEmocional)
+def crear_registro_emocional(
+    usuario_id: int,
+    registro_emocional: RegistroEmocionalCreate,
+    db: Session = Depends(get_db)
+):
+    # Asegúrate de que el usuario exista en la base de datos (puedes agregar lógica adicional si es necesario)
+    usuario = db.query(Usuario).filter(Usuario.id == usuario_id).first()
+    
+    if not usuario:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
+    # Asocia el usuario al nuevo registro emocional
+    db_registro_emocional = RegistroEmocional(**registro_emocional.dict(), usuario_id=usuario_id)
+
+    # Agrega el nuevo registro emocional a la base de datos
     db.add(db_registro_emocional)
     db.commit()
     db.refresh(db_registro_emocional)
-    return registroEmocionalRespuesta.from_orm(db_registro_emocional)
+
+    # Devuelve el nuevo registro emocional
+    return db_registro_emocional
 
 @router.get("/registros-emocionales/{registro_id}", response_model=registroEmocionalRespuesta)
 def obtener_registro_emocional(registro_id: int, db: Session = Depends(get_db)):
