@@ -26,7 +26,6 @@ def get_db():
 
 @router.post("/usuarios/", response_model=UsuarioResponse)
 def crear_usuario(usuario: UsuarioCreate, db: Session = Depends(get_db)):
-    database.Base.metadata.create_all(bind=database.engine)
 
     db_usuario = Usuario(**usuario.dict())
     db.add(db_usuario)
