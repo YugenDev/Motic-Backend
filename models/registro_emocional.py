@@ -9,10 +9,10 @@ class RegistroEmocional(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("usuarios.id"))
-    fecha = Column(String)
-    emocion = Column(String)
-    color = Column(String)
-    comentario = Column(String)
+    fecha = Column(String(length=255))
+    emocion = Column(String(length=255))
+    color = Column(String(length=255))
+    comentario = Column(String(length=255))
 
     usuario = relationship("Usuario", back_populates="registros_emocionales")
 
