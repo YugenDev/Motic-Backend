@@ -40,11 +40,26 @@ def crear_usuario(usuario: UsuarioCreate, db: Session = Depends(get_db)):
 
 
 @router.get("/usuarios/{usuario_id}", response_model=UsuarioResponse)
-def obtener_usuario(usuario_id: int, db: Session = Depends(get_db)):
+def obtener_usuario_por_id(usuario_id: int, db: Session = Depends(get_db)):
     db_usuario = db.query(Usuario).filter(Usuario.id == usuario_id).first()
     if db_usuario is None:
         raise HTTPException(status_code=404, detail="Usuario no encontrado") 
     return UsuarioResponse.from_orm(db_usuario)
+
+class CredencialesUsuario(BaseModel):
+    nombre: str
+    contraseña: str
+
+@router.post("/iniciar-sesion")
+def obtener_usuario(credenciales: CredencialesUsuario, db: Session = Depends(get_db)):
+    usuario = db.query(Usuario).filter(
+        Usuario.nombre == credenciales.nombre,
+        Usuario.contraseña == credenciales.contraseña
+    ).first()
+    if usuario:
+        return usuario
+    else:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
 
 @router.put("/usuarios/{usuario_id}", response_model=UsuarioResponse)
 def actualizar_usuario(usuario_id: int, usuario: UsuarioCreate, db: Session = Depends(get_db)):
