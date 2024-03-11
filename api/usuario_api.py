@@ -14,6 +14,10 @@ class UsuarioResponse(BaseModel):
     nombre: str
     email: str
 
+    class Config:
+        from_attributes = True
+        from_orm = True
+
 
 
 def get_db():
@@ -26,8 +30,9 @@ def get_db():
 
 @router.post("/usuarios/", response_model=UsuarioResponse)
 def crear_usuario(usuario: UsuarioCreate, db: Session = Depends(get_db)):
+    database.Base.metadata.create_all(bind=database.engine)
 
-    db_usuario = Usuario(**usuario.dict())
+    db_usuario = Usuario(**usuario.model_dump())
     db.add(db_usuario)
     db.commit()
     db.refresh(db_usuario)
@@ -47,7 +52,7 @@ def actualizar_usuario(usuario_id: int, usuario: UsuarioCreate, db: Session = De
     if db_usuario is None:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
     
-    for key, value in usuario.dict().items():
+    for key, value in usuario.model_dump().items():
         setattr(db_usuario, key, value) 
 
     db.commit()

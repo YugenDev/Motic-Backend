@@ -10,10 +10,15 @@ from pydantic import BaseModel
 router = APIRouter()
 
 class registroEmocionalRespuesta(BaseModel):
+    usuario_id: int
     fecha: str
     emocion: str
     color: str
     comentario: str
+
+    class Config:
+        from_attributes = True
+        from_orm = True
 
 
 def get_db():
@@ -23,8 +28,7 @@ def get_db():
     finally:
         db.close()
 
-
-@router.post("/registros-emocionales/{usuario_id}", response_model=RegistroEmocional)
+@router.post("/registros-emocionales/{usuario_id}", response_model=registroEmocionalRespuesta)
 def crear_registro_emocional(
     usuario_id: int,
     registro_emocional: RegistroEmocionalCreate,
@@ -37,7 +41,13 @@ def crear_registro_emocional(
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
 
     # Asocia el usuario al nuevo registro emocional
-    db_registro_emocional = RegistroEmocional(**registro_emocional.dict(), usuario_id=usuario_id)
+    db_registro_emocional = RegistroEmocional(
+        usuario_id=usuario_id,
+        fecha=registro_emocional.fecha,
+        emocion=registro_emocional.emocion,
+        color=registro_emocional.color,
+        comentario=registro_emocional.comentario
+    )
 
     # Agrega el nuevo registro emocional a la base de datos
     db.add(db_registro_emocional)
