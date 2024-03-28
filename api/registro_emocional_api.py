@@ -24,7 +24,7 @@ def get_db():
         db.close()
 
 
-@router.post("/registros-emocionales/{usuario_id}", response_model=RegistroEmocional)
+@router.post("/registros-emocionales/{usuario_id}", response_model=registroEmocionalRespuesta)
 def crear_registro_emocional(
     usuario_id: int,
     registro_emocional: RegistroEmocionalCreate,
