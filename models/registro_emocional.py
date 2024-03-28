@@ -7,8 +7,8 @@ from pydantic import BaseModel
 class RegistroEmocional(Base):
     __tablename__ = "registros_emocionales"
 
-    id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("usuarios.id"))
+    id_registro = Column(Integer, primary_key=True, index=True)
+    usuario_id = Column(Integer, ForeignKey("usuarios.id"))
     fecha = Column(String(length=255))
     emocion = Column(String(length=255))
     color = Column(String(length=255))
@@ -18,11 +18,12 @@ class RegistroEmocional(Base):
 
 
 class RegistroEmocionalCreate(BaseModel):
+    usuario_id: int
     fecha: str
     emocion: str
     color: str
     comentario: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
         from_orm = True
